@@ -1,0 +1,10 @@
+{
+	"id": "string,1~64,del1559021956",
+	"address": "o_string,0~1024,address",
+	"avatar": "o_string,0~2048,address",
+	"email": "o_email,1~64,aaron.xu@pingxx.com",
+	"gender": "o_string,f_MALE,MALE",
+	"mobile": "o_string_int,0~20,13890286688",
+	"name": "o_string,1~32,ke-liang",
+	"parent_user_id": "o_string,0~64,ke-liang.xu@pingxx.com"
+}

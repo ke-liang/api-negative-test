@@ -1,0 +1,124 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>API Negative test</title>
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link href="./css/bootstrap-select.css" rel="stylesheet">
+    <script src="./js/bootstrap-select.js"></script>
+    <link rel="shortcut icon" href="./favicon.ico">
+</head>
+
+<body>
+<form id="dataForm" name="dataForm">
+    <div class="container">
+        <table class="table table-hover" style="margin-top: 2%">
+            <tr>
+                <td>
+                    <label>测试类型: </label>
+                    <select name="testType" id="testType">
+                        <option selected value='wrong'>字段值不正确</option>
+                        <option value='maxValue'>字段值最大长度</option>
+                        <option value='required'>必填字段缺失</option>
+                        <option value='minValue'>字段最小值</option>
+                    </select>
+                </td>
+                <td>
+                    <p id="host" class="form-control-static"></p>
+                </td>
+                <td>
+                    <input type="text" class="form-control" name="path" value="/v1/charges" id="path"/>
+                </td>
+                <td>
+                    <select name="method" id="method" class="form-control">
+                        <option selected value='POST'>POST</option>
+                        <option value='GET'>GET</option>
+                        <option value='PUT'>PUT</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="button" class="btn btn-success" id="btn_submit" name="btn_submit" value="Send"
+                           onclick="showHint()"/>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>API Key: </label>
+                    <input type="text" class="form-control" name="apiKey" id="apiKey"/>
+                </td>
+                <td colspan="4">
+                    <label>常用接口 JSON：</label>
+                    <select name="normalAPI" id="normalAPI" class="selectpicker show-tick form-control"
+                            data-live-search="true"></select>
+                    <div style="float: right" class="input-group">
+                        <input type="text" class="form-control" name="jsonTmplName" id="jsonTmplName"
+                               title="JSON 模板名" data-container="body"
+                               data-toggle="popover" data-placement="bottom"
+                               data-content="文件名会以【常用接口 JSON】下拉列表的形式展示，如 Charge；建议不要重复，重复的话会覆盖已有的文件"
+                               placeholder="填写要保存的模板名"></input>
+                        <span class="input-group-btn">
+						    <input type="button" class="btn btn-success" id="btn_save" name="btn_save" value="Save"
+                                   data-toggle="tooltip" title="文件名会以【常用接口 JSON】下拉列表的形式展示" onclick="saveJSONTmpl()"/>
+					    </span>
+                    </div>
+                    <textarea class="form-control" rows="25" id="body">
+{
+    "order_no": "string,1~64,WR1557742096",
+    "amount": "int,1~1000000000,10",
+    "app": {
+        "id": "string,f_20,app_r1uDe9rjTKOOGq1i"
+    },
+    "channel": "string,f_alipay_wap,alipay_wap",
+    "currency": "string,f_cny,cny",
+    "client_ip": "string,f_127.0.0.1,127.0.0.1",
+    "subject": "string,1~32,subject",
+    "body": "string,1~128,body",
+    "description": "o_string,0~255,description1557742096",
+    "extra": {
+        "success_url": "url,8~255,http://baidu.com"
+    }
+}</textarea>
+                </td>
+            </tr>
+        </table>
+    </div>
+</form>
+<div class="container" id="accordion">
+    <div class="panel-heading">
+        <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#accordion"
+               href="#collapseExplanation" style="color: blue">
+                点击查看请求 body 的使用说明
+            </a>
+        </h4>
+    </div>
+    <div id="collapseExplanation" class="panel-collapse collapse">
+        <div class="panel-body">
+            <h5>请求 body 中每个字段的值都要遵循如下格式填写 </h5>
+            <ol>
+                <li>"字段类型,字段取值范围/固定值,正常值"，比如 "string,1~64,order123no"，逗号后面不要有空格，如果是选填字段则是 "o_string,1~64,order123no"
+                </li>
+                <li>condition 中的符号全是英文半角，不要写层中文全角(虽然做了 ~ 和 ～ 的兼容)</li>
+                <li>condition 中支持的数据类型为 string, string_int, int, timestamp, url, email, boolean，且都是小写，其中 ip 按照 string 处理</li>
+                <ul>
+                    <li>string 支持字段取值范围(1~64)/固定长度(f_20)/固定值(f_name)/最大长度(max_20)/最小长度(min_1) 五种</li>
+                    <li>string_int 支持的范围同 string，表示的是仅数字字符串的 string 类型</li>
+                    <li>int/timestamp 支持字段取值范围/最大数值/最小数值 三种</li>
+                    <li>url/email 仅支持取值范围，用来测试其最大和最小长度</li>
+                    <li>boolean 只需要填写 f_xx 固定值用来测试通用的无效值</li>
+                    <li>date 只需要填写 f_xx 固定值用来测试通用的无效值</li>
+                </ul>
+                <li>字段取值范围用 1~64 中表示，固定长度用 f_20 表示，固定值用 f_xxx 表示(多个固定值的时候取其中一个即可)</li>
+                <li>表示固定值/长度的字母解释：f 表示 fixed，max 表示最大值，min 表示最小值，且必须是小写</li>
+                <li>正常值是指可以正常调用接口的值，每个字段写任意一个正常值即可</li>
+            </ol>
+        </div>
+    </div>
+</div>
+<p>
+    <span id="txtHint"></span>
+</p>
+<script type="text/javascript" src='js/clientHint.js'></script>
+</body>
+</html>
