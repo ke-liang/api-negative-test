@@ -39,7 +39,7 @@ $rawBody = array(
 **注意第四层字段的值不能再是数组**
 
 - $rawBody 中每个字段的值都要遵循如下格式填写
-    - "字段类型,字段取值范围/固定值,正常值"，比如 "string,1~64,order123no"，逗号后面不要有空格，如果是选填字段则是 "o_string,1~64,order123no"
+    - "字段类型,字段取值范围/固定值,正常值"，比如 "string,1\~64,order123no", 逗号后面不要有空格，如果是选填字段则是 "string,1\~64,order123no"
     - condition 中的符号全是英文半角，不要写层中文全角(虽然做了 ~ 和 ～ 的兼容)
     - condition 中支持的数据类型为 string, string_int, int, timestamp, url, email, boolean，且都是小写，其中 ip 按照 string 处理
         - string 支持字段取值范围(1~64)/固定长度(f_20)/固定值(f_name)/最大长度(max_20)/最小长度(min_1) 五种
