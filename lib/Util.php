@@ -479,4 +479,62 @@ class Util
         }
         return $fileNames;
     }
+
+    /**
+     * 将图片转为 base64 string
+     * @param $img_file , 图片名，如 ../img/horse.jpg
+     * @return null|string
+     */
+    public static function imgToBase64($img_file)
+    {
+        $img_base64 = null;
+        if (file_exists($img_file)) {
+            $fileSize = filesize($img_file);//bytes
+            $imgSize = $img_base64 = $img_type = null;
+            if ($fileSize >= 1048576) {
+                $imgSize = $fileSize / pow(1024, 2) . ' MB';//换算成单位为 MB
+            } else {
+                $imgSize = $fileSize / pow(1024, 1) . 'KB';//换算成单位为 KB
+            }
+            echo "Image($img_file) size is " . $imgSize . PHP_EOL;
+
+            $img_info = getimagesize($img_file); // 取得图片的大小，类型等
+
+            $fp = fopen($img_file, "r"); // 图片是否可读权限
+
+            if ($fp) {
+                $content = fread($fp, $fileSize);
+                $file_content = chunk_split(base64_encode($content)); // base64编码
+                switch ($img_info[2]) {           //判读图片类型
+                    case 1:
+                        $img_type = "gif";
+                        break;
+                    case 2:
+                        $img_type = "jpg";
+                        break;
+                    case 3:
+                        $img_type = "png";
+                        break;
+                }
+
+                $img_base64 = 'data:image/' . $img_type . ';base64,' . $file_content;//合成图片的base64编码
+
+            }
+            fclose($fp);
+        }
+
+        return $img_base64; //返回图片的base64
+    }
+
+    /**
+     * 将 base64 的 string 解码为指定的图片
+     * @param $base64_string
+     * @param $file
+     */
+    public static function base64ToImg($base64_string, $file)
+    {
+        $base64_string = explode(',', $base64_string); //截取data:image/png;base64, 这个逗号后的字符
+        $data = base64_decode($base64_string[1]);//对截取后的字符使用base64_decode进行解码
+        file_put_contents($file, $data); //写入文件并保存
+    }
 }
